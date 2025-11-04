@@ -133,10 +133,8 @@ def procesar_video():
 def main():
     st.set_page_config(page_title="Detección de Postura", page_icon="🧍", layout="wide")
     
-    st.title("🎯 Detección de Punto de Referencia de Posición")
-    st.markdown("### Detección de posturas: Parado vs Sentado")
+    st.title("Detección de posturas: Parado vs Sentado")
     
-    # Columnas para layout
     col1, col2 = st.columns([2, 1])
     
     with col1:
@@ -174,8 +172,7 @@ def main():
             Código donde se accede a datos compartidos. 
             Está protegido por mutex.acquire() y mutex.release()
             """)
-    
-    # Botones de control
+            
     col_btn1, col_btn2 = st.columns(2)
     
     with col_btn1:
