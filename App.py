@@ -155,23 +155,45 @@ def main():
         
         st.markdown("---")
         st.markdown("### 🔧 Conceptos técnicos:")
-        with st.expander("Hilos (Threads)"):
-            st.write("""
-            Permiten procesar el video en segundo plano mientras 
-            la interfaz se mantiene responsive.
-            """)
-        
-        with st.expander("Mutex"):
-            st.write("""
-            Protege las variables compartidas (postura, frame) 
-            para evitar condiciones de carrera entre hilos.
-            """)
-        
-        with st.expander("Sección Crítica"):
-            st.write("""
-            Código donde se accede a datos compartidos. 
-            Está protegido por mutex.acquire() y mutex.release()
-            """)
+        with st.expander("🧵 Hilos (Threads)"):
+    st.write("""
+    **¿Qué son?** Los hilos permiten ejecutar múltiples tareas simultáneamente.
+    
+    **En este proyecto:** Un hilo captura y procesa el video continuamente 
+    mientras otro hilo mantiene la interfaz actualizada y responsive.
+    
+    **Sin hilos:** La aplicación se "congelaría" mientras procesa cada frame.
+    """)
+
+with st.expander("🔒 Mutex (Exclusión Mutua)"):
+    st.write("""
+    **¿Qué es?** Un mutex es un mecanismo de sincronización que actúa como 
+    un "candado" para proteger datos compartidos.
+    
+    **En este proyecto:** Protege las variables `postura` y `frame` para que 
+    solo un hilo pueda modificarlas a la vez.
+    """)
+
+with st.expander("⚠️ Sección Crítica"):
+    st.write("""
+    **¿Qué es?** Porción de código donde se accede o modifica recursos compartidos 
+    entre múltiples hilos.
+    
+    **En este proyecto:** Cada vez que actualizamos `shared.postura` o `shared.frame`, 
+    usamos `mutex.acquire()` antes y `mutex.release()` después.
+    """)
+
+with st.expander("🚦 Semáforos"):
+    st.write("""
+    **¿Qué son?** Controlan cuántos hilos pueden acceder a un recurso simultáneamente.
+    
+    **Diferencia con Mutex:** 
+    - Mutex: Solo 1 hilo a la vez
+    - Semáforo: N hilos a la vez (configurable)
+    
+    **En este proyecto:** Se podría usar para limitar cuántos frames se procesan 
+    simultáneamente y evitar sobrecarga del sistema.
+    """)
             
     col_btn1, col_btn2 = st.columns(2)
     
