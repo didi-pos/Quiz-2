@@ -5,11 +5,100 @@
     <br>
     <b>Didier Posse</b>
     <br>
-    <em>Ejecución del código</em>
+    <em>Primer Punto</em>
   </p>
 </div>
 
 <hr>
+
+<div align="center">
+  <h2>Explicación de la Aplicación</h2>
+</div>
+
+<ol>
+  <li><br>
+    <div align="center">
+      <p><img width=850 src="https://github.com/user-attachments/assets/f3d84c56-8a72-4907-88cf-11d8ad782c15"/></p>
+    </div>
+    <p>
+      En esta parte del código se define la clase <code>SharedData</code>, la cual contiene las variables que se van a compartir entre los distintos hilos.  
+      Dentro de esta clase se inicializa un <b>mutex</b> usando <code>threading.Lock()</code>, que actúa como un candado para evitar que dos hilos modifiquen al mismo tiempo los mismos datos.  
+      También se definen las variables <code>postura</code>, <code>frame</code> y <code>running</code>, que son las que se actualizarán constantemente desde el hilo principal de procesamiento de video.  
+      <br><br>
+      En resumen, este bloque prepara el entorno seguro donde ambos hilos (el de procesamiento y el de interfaz) pueden comunicarse sin interferirse entre sí, evitando errores o lecturas inconsistentes mientras se detecta la postura.
+    </p>
+  </li>
+
+  <li><br>
+    <div align="center">
+      <p><img width=850 src="https://github.com/user-attachments/assets/d723a09c-3ad1-4b9b-953d-0e5d66dfb418"/></p>
+    </div>
+    <p>
+      Aquí se encuentra la función <code>procesar_video()</code>, la cual se ejecuta en un hilo independiente cuando el usuario presiona el botón de iniciar detección.  
+      Este hilo se encarga de capturar los cuadros desde la cámara en tiempo real usando <code>cv2.VideoCapture(0)</code> y procesarlos con <b>MediaPipe</b> para detectar los puntos del cuerpo.  
+      Mientras el hilo está activo (<code>shared.running = True</code>), se ejecuta en bucle continuo.  
+      <br><br>
+      Cada iteración del bucle obtiene un nuevo frame, lo convierte a RGB, detecta los landmarks y calcula el ángulo de la rodilla con la función <code>calcular_angulo()</code>.  
+      Con base en ese ángulo se determina si la persona está parada, sentada o en transición.  
+      Todo esto ocurre sin detener la interfaz, gracias al uso de hilos.
+    </p>
+  </li>
+
+  <li><br>
+    <div align="center">
+      <p><img width=850 src="https://github.com/user-attachments/assets/f6d7a5b3-7a2b-45cd-9f49-b03d090ca36d"/></p>
+    </div>
+    <p>
+      En este fragmento está una parte fundamental del uso de hilos: la <b>sección crítica</b>.  
+      Una vez que el hilo de procesamiento obtiene la nueva postura y el frame procesado, debe actualizar las variables compartidas <code>shared.postura</code> y <code>shared.frame</code>.  
+      <br><br>
+      Para hacerlo sin que otro hilo lea o escriba al mismo tiempo (lo que generaría inconsistencias), se utiliza el <b>mutex</b> con las instrucciones <code>shared.mutex.acquire()</code> y <code>shared.mutex.release()</code>.  
+      Esto asegura que solo un hilo acceda a esa parte del código a la vez.  
+      <br><br>
+      Este mecanismo evita errores de concurrencia, como mostrar un frame viejo o una postura incorrecta mientras el otro hilo aún está actualizando los datos.
+    </p>
+  </li>
+
+  <li><br>
+    <div align="center">
+      <p><img width=850 src="https://github.com/user-attachments/assets/4f5b3953-2598-463d-9dc2-40144b6bfb7c"/></p>
+    </div>
+    <p>
+      En esta parte del código, el hilo de la interfaz (que mantiene actualizada la ventana de Streamlit) accede también a los mismos datos compartidos.  
+      Antes de leer el frame o la postura actual, vuelve a usar el mismo <b>mutex</b> para garantizar que los datos se lean de forma segura.  
+      <br><br>
+      El uso del mutex en lectura y escritura permite que ambos hilos trabajen en paralelo sin sobreescribir información.  
+      Así, mientras el hilo de procesamiento detecta la postura en tiempo real, el hilo de interfaz puede mostrar los resultados sin interrumpirlo.
+    </p>
+  </li>
+
+  <li><br>
+    <div align="center">
+      <p><img width=850 src="https://github.com/user-attachments/assets/8db4df58-bff5-4b29-9c8d-7a985f4fdc83"/></p>
+    </div>
+    <p>
+      En este último bloque, se inicia el hilo de procesamiento cuando el usuario hace clic en el botón “Iniciar Detección”.  
+      Se crea un nuevo hilo con <code>threading.Thread(target=procesar_video, daemon=True)</code> y se ejecuta con <code>start()</code>.  
+      <br><br>
+      Al hacerlo, la aplicación lanza un proceso paralelo que se encarga de todo el manejo del video y detección de postura, mientras el hilo principal se mantiene manejando la interfaz gráfica.  
+      De esta forma, la app no se congela y puede seguir actualizando los resultados en tiempo real.  
+      <br><br>
+      Si se quisiera controlar cuántos hilos pueden ejecutar simultáneamente partes del código, se podría usar un <b>semáforo</b>, aunque en este caso el mutex fue suficiente porque solo se necesita acceso exclusivo de un hilo a la vez.
+    </p>
+  </li>
+</ol>
+
+<hr>
+
+<div align="center">
+  <p><em>Segundo Punto</em></p>
+</div>
+
+<hr>
+
+<div align="center">
+  <h2>Ejecución de la Aplicación</h2>
+</div>
 
 <ol>
   <li><br>
